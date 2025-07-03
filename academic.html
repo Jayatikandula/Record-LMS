@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academic Performance - Upload PDFs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #e1bee7);
+      padding: 30px 10px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .semester {
+      margin-bottom: 20px;
+      border: 1px solid #6200ea;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .semester-header {
+      background-color: #6200ea;
+      color: white;
+      padding: 15px 20px;
+      font-size: 1.1em;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .semester-content {
+      max-height: 0;
+      overflow: hidden;
+      background: #f3e5f5;
+      transition: max-height 0.4s ease;
+      padding: 0 20px;
+    }
+    .semester-content.open {
+      max-height: 800px;
+      padding: 20px;
+    }
+    .lab-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .lab-row label {
+      flex: 1;
+      font-weight: bold;
+    }
+    .upload-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .upload-btn, .save-btn, #backBtn {
+      padding: 8px 16px;
+      font-size: 0.95em;
+      border-radius: 5px;
+      border: none;
+      color: white;
+      background-color: #6200ea;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .upload-btn:hover, .save-btn:hover, #backBtn:hover {
+      background-color: #3700b3;
+    }
+    .file-link {
+      font-size: 0.9em;
+      color: #3700b3;
+      text-decoration: underline;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    #backBtn {
+      display: block;
+      margin: 40px auto 0;
+      background-color: #757575;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Academic Performance</h2>
+    <div id="semestersContainer"></div>
+    <button id="backBtn">Back to Student Info</button>
+  </div>
+
+  <script>
+    const loggedInUser = sessionStorage.getItem('loggedInUser');
+    const userRole = sessionStorage.getItem('userRole');
+
+    if (!loggedInUser || userRole !== 'student') {
+      alert('Access denied! Please login as student.');
+      window.location.href = 'index.html';
+    }
+
+    const semestersLabSubjects = {
+      "Semester 1": ["English Lab", "Physics Lab", "C Programming Lab", "Engineering Workshop Lab"],
+      "Semester 2": ["Mathematics Lab", "Electronics Lab", "Data Structures Lab"],
+      "Semester 3": ["Digital Logic Lab", "Microprocessor Lab", "Object Oriented Programming Lab"],
+      "Semester 4": ["Database Lab", "Operating Systems Lab", "Software Engineering Lab"]
+    };
+
+    let academicData = JSON.parse(sessionStorage.getItem(`${loggedInUser}_academicPerformance`)) || {};
+
+    for (const sem in semestersLabSubjects) {
+      if (!academicData[sem]) {
+        academicData[sem] = {};
+        semestersLabSubjects[sem].forEach(lab => {
+          academicData[sem][lab] = null;
+        });
+      }
+    }
+
+    const container = document.getElementById('semestersContainer');
+
+    function createLabRow(semester, lab) {
+      const row = document.createElement('div');
+      row.className = 'lab-row';
+
+      const label = document.createElement('label');
+      label.textContent = lab;
+
+      const uploadSection = document.createElement('div');
+      uploadSection.className = 'upload-section';
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'application/pdf';
+
+      const uploadBtn = document.createElement('button');
+      uploadBtn.textContent = 'Upload PDF';
+      uploadBtn.className = 'upload-btn';
+
+      const fileLink = document.createElement('a');
+      fileLink.className = 'file-link';
+      fileLink.target = '_blank';
+      fileLink.style.display = 'none';
+
+      if (academicData[semester][lab]) {
+        fileLink.href = academicData[semester][lab];
+        fileLink.textContent = 'View uploaded file';
+        fileLink.style.display = 'inline';
+      }
+
+      uploadBtn.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file && file.type === 'application/pdf') {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            academicData[semester][lab] = e.target.result;
+            fileLink.href = e.target.result;
+            fileLink.textContent = 'View uploaded file';
+            fileLink.style.display = 'inline';
+            alert(`PDF uploaded for ${lab}`);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          alert('Please upload a PDF file only.');
+          fileInput.value = '';
+        }
+      });
+
+      uploadSection.append(uploadBtn, fileInput, fileLink);
+      row.append(label, uploadSection);
+      return row;
+    }
+
+    function createSemesterSection(semester) {
+      const semDiv = document.createElement('div');
+      semDiv.className = 'semester';
+
+      const header = document.createElement('div');
+      header.className = 'semester-header';
+      header.textContent = semester;
+
+      const arrow = document.createElement('span');
+      arrow.textContent = '▼';
+      arrow.style.transition = 'transform 0.3s';
+      header.appendChild(arrow);
+
+      const content = document.createElement('div');
+      content.className = 'semester-content';
+
+      semestersLabSubjects[semester].forEach(lab => content.appendChild(createLabRow(semester, lab)));
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.className = 'save-btn';
+      saveBtn.addEventListener('click', () => {
+        sessionStorage.setItem(`${loggedInUser}_academicPerformance`, JSON.stringify(academicData));
+        alert(`${semester} performance saved.`);
+      });
+
+      content.appendChild(saveBtn);
+      header.addEventListener('click', () => {
+        const isOpen = content.classList.toggle('open');
+        arrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0)';
+      });
+
+      semDiv.append(header, content);
+      return semDiv;
+    }
+
+    for (const sem in semestersLabSubjects) {
+      container.appendChild(createSemesterSection(sem));
+    }
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      window.location.href = 'student.html';
+    });
+  </script>
+</body>
+</html>
