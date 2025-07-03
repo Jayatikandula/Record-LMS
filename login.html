@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+      overflow: hidden;
+    }
+
+    .background-bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      animation: floatUp 15s infinite;
+    }
+
+    .bubble:nth-child(2) {
+      left: 20%;
+      width: 60px;
+      height: 60px;
+      animation-delay: 3s;
+    }
+
+    .bubble:nth-child(3) {
+      left: 40%;
+      animation-delay: 5s;
+    }
+
+    .bubble:nth-child(4) {
+      left: 60%;
+      width: 50px;
+      height: 50px;
+      animation-delay: 7s;
+    }
+
+    .bubble:nth-child(5) {
+      left: 80%;
+      animation-delay: 10s;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-1200px) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    .login-container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      margin: 120px auto;
+      z-index: 1;
+      animation: slideIn 1s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      animation: bounceIn 1s ease;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    input, select, button {
+      padding: 12px 15px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    input:nth-child(1) { animation-delay: 0.3s; }
+    input:nth-child(2) { animation-delay: 0.6s; }
+    select { animation-delay: 0.9s; }
+    button { animation-delay: 1.2s; }
+
+    input:focus, select:focus {
+      border-color: #4c9aff;
+      box-shadow: 0 0 5px rgba(76, 154, 255, 0.5);
+      outline: none;
+    }
+
+    button {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00f2fe;
+    }
+
+    .error {
+      text-align: center;
+      color: #e53935;
+      font-weight: bold;
+      min-height: 1.2em;
+    }
+
+    .illustration {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      z-index: 2;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+        margin: 0 15px;
+      }
+
+      .illustration {
+        width: 180px;
+        top: -100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Bubble Background -->
+  <div class="background-bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <div class="login-container">
+    <!-- Lottie Animation -->
+    <div class="illustration">
+      <lottie-player 
+        src="https://assets5.lottiefiles.com/packages/lf20_t9gkkhz4.json" 
+        background="transparent" 
+        speed="1" 
+        style="width: 100%; height: 100%;" 
+        loop 
+        autoplay>
+      </lottie-player>
+    </div>
+
+    <h2>Login</h2>
+    <form id="loginForm" autocomplete="off">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <select id="role" required>
+        <option value="" disabled selected>Select Role</option>
+        <option value="student">Student</option>
+        <option value="faculty">Faculty</option>
+      </select>
+      <button type="submit">Login</button>
+      <p class="error" id="errorMsg"></p>
+    </form>
+  </div>
+
+  <!-- Lottie Script -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <script>
+    const users = {
+      student1: {
+        password: "pass123",
+        role: "student",
+        info: {
+          role: "Student",
+          username: "student1@example.com",
+          branch: "Computer Science",
+          college: "ABC University"
+        }
+      },
+      student2: {
+        password: "pass234",
+        role: "student",
+        info: {
+          role: "Student",
+          username: "student2@example.com",
+          branch: "Mechanical Engineering",
+          college: "XYZ Institute"
+        }
+      },
+      faculty1: {
+        password: "faculty123",
+        role: "faculty",
+        info: "Faculty 1 info: Assigned to Class 10A"
+      },
+      faculty2: {
+        password: "faculty234",
+        role: "faculty",
+        info: "Faculty 2 info: Assigned to Class 12B"
+      }
+    };
+
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+
+      if (!(username in users)) {
+        errorMsg.textContent = "User not found.";
+        return;
+      }
+
+      if (users[username].password !== password) {
+        errorMsg.textContent = "Incorrect password.";
+        return;
+      }
+
+      if (users[username].role !== role) {
+        errorMsg.textContent = "Role does not match.";
+        return;
+      }
+
+      sessionStorage.setItem('loggedInUser', username);
+      sessionStorage.setItem('userRole', role);
+      if (role === "student") {
+        sessionStorage.setItem('userInfo', JSON.stringify(users[username].info));
+      } else {
+        sessionStorage.setItem('userInfo', users[username].info);
+      }
+
+      if (role === 'student') {
+        window.location.href = 'student.html';
+      } else if (role === 'faculty') {
+        window.location.href = 'faculty.html';
+      }
+    });
+  </script>
+</body>
+</html>
